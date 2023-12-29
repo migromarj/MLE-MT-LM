@@ -1,1 +1,3 @@
 python-dotenv==1.0.0
+bardapi==0.1.38
+sydney-py==0.17.6
