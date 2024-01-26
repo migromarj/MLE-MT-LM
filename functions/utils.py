@@ -67,6 +67,7 @@ def generate_demografic_context():
 
 async def request_to_bing(question, question2 = None, type="q&a"):
     prompt = ""
+    print(type)
     if (type == "q&a"):
         prompt = "Answer me the following question in plain text without using quotes: "
     elif (type == "change_order"):
@@ -91,7 +92,6 @@ async def request_to_bing(question, question2 = None, type="q&a"):
         if (type == "compare"):
             response = await sydney.ask(prompt + question + "\n" + question2, citations=False)
         else:
-            print("hola")
             response = await sydney.ask(prompt + question, citations=False)
         response = convert_to_plain_text(response)
         return response

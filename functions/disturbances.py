@@ -1,7 +1,7 @@
 import random
 import string
 
-from utils import get_only_answer_bing, request_to_bing
+from functions.utils import get_only_answer_bing, request_to_bing
 
 
 def replace_characters(input, nivel):
@@ -32,21 +32,21 @@ def add_characters(input, level):
     return ''.join(characters)
 
 async def add_random_words(input):
-    response = await request_to_bing(input, "add_random_words")
+    response = await request_to_bing(input, type="add_random_words")
     return response
 
 async def remplace_named_entities(input):
-    response = await request_to_bing(input, "remplace_named_entities")
+    response = await request_to_bing(input, type="remplace_named_entities")
     return get_only_answer_bing(response)
 
 async def change_order(input):
-    response = await request_to_bing(input, "change_order")
+    response = await request_to_bing(input, type="change_order")
     return get_only_answer_bing(response)
 
 async def use_negation(input):
-    response = await request_to_bing(input, "use_negation")
+    response = await request_to_bing(input, type="use_negation")
     return get_only_answer_bing(response)
 
 async def introducce_demografic_context(input):
-    response = await request_to_bing(input, "introducce_demografic_context")
+    response = await request_to_bing(input, type="introducce_demografic_context")
     return response
