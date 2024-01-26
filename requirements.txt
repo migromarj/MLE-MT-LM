@@ -3,3 +3,4 @@ bardapi==0.1.38
 sydney-py==0.17.6
 markdown==3.5.1
 nltk==3.8.1
+pandas==2.1.4
