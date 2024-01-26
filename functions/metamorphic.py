@@ -105,7 +105,7 @@ async def get_distance_answers(input,input2,mode = 0):
 async def distance_set_mrt(original_input, model='q&a', mode=0, threshold=70):
     
     if (model[0] == 'fillmask'):
-        return "TODO" # TODO
+        return "TODO" # TODO 
     elif (model[0] == 'translate' or model[0] == 'summarize' or model == 'q&a'):
         output_original_input = request_to_model(model, original_input)
         bing_output = await request_to_bing(original_input, model[0])
@@ -120,4 +120,40 @@ async def distance_set_mrt(original_input, model='q&a', mode=0, threshold=70):
             similarity_other_bard = await get_distance_answers(output_original_input, bard_output, 1)
             return {"bing": similarity_other_bing > threshold, "bard": similarity_other_bard > threshold}
 
+def calculate_M_ASR(model, disturbation_func, texts):
+    fulfilled_relations = 0
+    evaluated_relations = 0
+
+    for text in texts:
+        disturbed = disturbation_func(text)  
+        
+        if model[0] == 'q&a' or model[0] == 'translate' or model[0] == 'fillmask' or model[0] == 'summarize':
+            fulfilled_relations += input_distance_mrt(disturbed) #TODO: Complete this function
+            evaluated_relations += 1
+            if model[0] == 'q&a':
+                fulfilled_relations += prompt_distance_mrt(disturbed) #TODO: Complete this function
+                evaluated_relations += 1
+        elif model[0] in ['toxic', 'spam']:
+            fulfilled_relations += input_equivalence_mrt(model,text,disturbed)
+            evaluated_relations += 1
+        elif model[0] == 'q&a' or model[0] == 'spam':
+            fulfilled_relations += input_discrepancy_mrt(disturbed)
+            evaluated_relations += 1
+        elif model[0] in ['spam', 'toxic']:
+            fulfilled_relations += equivalence_set_mrt(model,disturbed)
+            evaluated_relations += 1
+        elif model[0] == 'q&a' or model[0] == 'translate' or model[0] == 'fillmask' or model[0] == 'summarize':
+            res_dict = distance_set_mrt(text, model=model[0])
+            res = any(res_dict.values()) #TODO: check if this is correct
+            fulfilled_relations += res
+            evaluated_relations += 1
+
+
+    if evaluated_relations == 0:
+        return 0 
+
+    m_asr = fulfilled_relations / evaluated_relations
+    return m_asr
+            
+            
 

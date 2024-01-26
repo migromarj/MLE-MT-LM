@@ -119,4 +119,6 @@ def request_to_bard(question, question2 = None, type="q&a"):
         response = bard.get_answer(prompt + question + "\n" + question2)['content']
     else:
         response = bard.get_answer(prompt + question)['content']
-    return response 
+    return response
+
+ 
