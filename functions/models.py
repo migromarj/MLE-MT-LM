@@ -10,11 +10,11 @@ def request_to_model(model, input1, iterations=0):
 
     BASE_URL = "https://api-inference.huggingface.co/models/"
     headers = {"Authorization": f"Bearer {os.getenv('HUGGING_FACE_API_KEY')}"}
-    new_input = input1
+    new_input = input1.strip()
     parameters = {}
 
     if model[0] == 'fillmask':
-        new_input = input1.replace('<mask>', model[2])
+        new_input = new_input.replace('<mask>', model[2])
     elif model[0] == 'translate':
         parameters = {"src_lang": "en_XX", "tgt_lang": "tgt_XX"}
 
@@ -33,11 +33,12 @@ def request_to_model(model, input1, iterations=0):
         return response.json()
             
     except Exception as exception:
+        print(exception)
         return "Error"
 
     
 
-async def request_to_bing(first_question, second_question = None, type="q&a", prompt = ""):
+async def request_to_bing(first_question, second_question = "", type="q&a", prompt = ""):
 
     if (type == "q&a"):
         prompt = "Answer me the following question in plain text without using quotes: "
@@ -46,7 +47,7 @@ async def request_to_bing(first_question, second_question = None, type="q&a", pr
     elif (type == "add_random_words"):
         prompt = "Add random words, do not replace, to the next sentence but don't let the phrase lose its meaning: "
     elif (type == "remplace_named_entities"):
-        prompt = "Replace all named entities to alter the demographic context of the following sentence, give me only the new sentence: "
+        prompt = "Replace all named entities, give me only the new sentence: "
     elif (type == "use_negation"):
         prompt = "Modify the following sentence using the negation, give me only the new sentence: "
     elif (type == "introducce_demografic_context"):
@@ -77,8 +78,8 @@ async def request_to_bing(first_question, second_question = None, type="q&a", pr
         prompt = "Add aleatory characters from the following sentence and give me back just the result: "
     
     
-    if (type == "compare"):
-        async with SydneyClient(style="balanced") as sydney1:
+    if (type == "compare" or type == "remplace_named_entities"):
+        async with SydneyClient(style="balanced") as sydney1:            
             response = await sydney1.ask(prompt + first_question + "\n" + second_question, citations=False)
     else:
         async with SydneyClient(style="precise") as sydney2:

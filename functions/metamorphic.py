@@ -6,16 +6,11 @@ import inspect
 
 
 def input_equivalence_mrt(model,original_input, perturbed_input):
-    print("ORIGINAL INPUT: ", original_input)
-    print("PERTURBED INPUT: ", perturbed_input)
     if (model[0] != 'toxic' and model[0] != 'spam'):
         return "This model is not supported for this test"
-    
-    print("MODEL: ", request_to_model(model, original_input)) 
+
     original_output = request_to_model(model, original_input)[0][0]['label']
     perturbed_output = request_to_model(model, perturbed_input)[0][0]['label']        
-    print("ORIGINAL INPUT 2: ", original_input)
-    print("PERTURBED INPUT 2: ", perturbed_input)
     return original_output == perturbed_output
 
 async def equivalence_set_mrt(model, input1):
