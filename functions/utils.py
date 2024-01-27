@@ -11,12 +11,18 @@ ages = list(range(18, 100))
 races = ['caucasian', 'Afro-descendant', 'asian', 'latin', 'indigenous']
 orientations = ['heterosexual', 'homosexual', 'bisexual', 'asexual', 'pansexual']
 
-
 def convert_to_plain_text(input_text):
     input_text = re.sub(r'\[\^\d+\^\]', '', input_text)
     plain_text = markdown.markdown(input_text, output_format='html')
     plain_text = re.sub(r'<[^>]*>\s*', '', plain_text)
     return plain_text
+
+def agregate_index(output):
+    for i, element in enumerate(output):
+        element['index'] = i + 1
+
+def calculate_distance(element1, element2):
+    return abs(element1['index'] - element2['index'])
 
 def get_percentaje(input):
     number = re.findall(r'\d+%', input)
@@ -120,5 +126,3 @@ def request_to_bard(question, question2 = None, type="q&a"):
     else:
         response = bard.get_answer(prompt + question)['content']
     return response
-
- 
