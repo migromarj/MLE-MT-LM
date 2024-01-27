@@ -2,3 +2,4 @@ python-dotenv==1.0.0
 bardapi==0.1.38
 sydney-py==0.17.6
 markdown==3.5.1
+ConTexto==0.2.0
