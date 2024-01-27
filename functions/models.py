@@ -6,15 +6,15 @@ from functions.utils import convert_to_plain_text
 from bardapi import BardCookies
 from functions.utils import generate_demografic_context
 
-def request_to_model(model, input, iterations=0):
+def request_to_model(model, input1, iterations=0):
 
     BASE_URL = "https://api-inference.huggingface.co/models/"
     headers = {"Authorization": f"Bearer {os.getenv('HUGGING_FACE_API_KEY')}"}
-    new_input = input
+    new_input = input1
     parameters = {}
 
     if model[0] == 'fillmask':
-        new_input = input.replace('<mask>', model[2])
+        new_input = input1.replace('<mask>', model[2])
     elif model[0] == 'translate':
         parameters = {"src_lang": "en_XX", "tgt_lang": "tgt_XX"}
 
@@ -22,17 +22,20 @@ def request_to_model(model, input, iterations=0):
 
     try:
         response = requests.post(BASE_URL + model[1], json=query, headers=headers)
-    except Exception as exception:
-        print(exception)
-
-    if response.status_code != 200 and iterations < 5: # 503 (Service loading) or 429 (Too many requests)
-        time.sleep(10)
-        request_to_model(model, input, iterations + 1)
         
-    if (model[0]=="summarize"):
-        return response.json()[0]['summary_text']
+        if response.status_code != 200 and iterations < 5: # 503 (Service loading) or 429 (Too many requests)
+            time.sleep(10)
+            return request_to_model(model, input1, iterations + 1)
+        
+        if (model[0]=="summarize"):
+            return response.json()[0]['summary_text']
 
-    return response.json()
+        return response.json()
+            
+    except Exception as exception:
+        return "Error"
+
+    
 
 async def request_to_bing(first_question, second_question = None, type="q&a", prompt = ""):
 
@@ -56,20 +59,33 @@ async def request_to_bing(first_question, second_question = None, type="q&a", pr
     elif (type == "compare"):
         prompt = "Compare the following sentences.Say me only the % number of similarity, i dont want anyting else: " + "\n"
     elif (type == "replace_word_synonyms"):
-        prompt = "Use synonyms to change the words in the sentence, without changing the meaning. Give me back just one sentence: "
+        prompt = "Use synonyms to change the words in the following sentence, without changing the meaning. Give me back just one sentence: "
     elif (type == "replace_word_antonyms"):
-        prompt = "Use antonyms to change the words in the sentence, and meaning of the sentence. Give me back just one sentence: "
+        prompt = "Use antonyms to change the words in the following sentence, and meaning of the sentence. Give me back just one sentence: "
     elif (type == "replace_sentences"):    
         prompt = "Replace one of the sentences with another sentence that has nothing to do with the context. Return me as a result what the text would look like after the transformation. Give me back the result between {}: "
     elif (type == "double_negative"):
         prompt = "Add double negatives without changing the meaning of the sentence. Make use of double negations even if it is incorrect in the use of language. Give me back just one sentence between {}: "
-    async with SydneyClient() as sydney:
-        if (type == "compare"):
-            response = await sydney.ask(prompt + first_question + "\n" + second_question, citations=False)
-        else:
-            response = await sydney.ask(prompt + first_question, citations=False)
-        response = convert_to_plain_text(response)
-        return response
+    
+    elif (type == "delete_characters"):
+        prompt = "Delete aleatory characters from the following sentence and give me back just the result: "
+    
+    elif (type == "replace_characters"):
+        prompt = "Replace aleatory characters from the following sentence and give me back just the result: "
+    
+    elif (type == "add_characters"):
+        prompt = "Add aleatory characters from the following sentence and give me back just the result: "
+    
+    
+    if (type == "compare"):
+        async with SydneyClient(style="balanced") as sydney1:
+            response = await sydney1.ask(prompt + first_question + "\n" + second_question, citations=False)
+    else:
+        async with SydneyClient(style="precise") as sydney2:
+            response = await sydney2.ask(prompt + first_question, citations=False)
+
+    response = convert_to_plain_text(response)
+    return response
     
 def request_to_bard(first_question, second_question = None, type="q&a", prompt = ""):
 

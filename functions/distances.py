@@ -1,3 +1,4 @@
+import re
 from functions.models import request_to_bard, request_to_bing
 from functions.utils import calculate_distance, get_percentage
 from contexto.comparacion import Similitud, Distancia, DiferenciaStrings
@@ -24,14 +25,19 @@ def similarity_fill_mask(response1, response2):
 
     return 1 - (total_distance/5)
 
-async def get_distance_answers(input1,input2,mode = 0):
+async def get_distance_answers(input1,input2,mode = 0, iteration = 0):
     if (mode == 0):
-        response_bing = await request_to_bing(input1,input2,"compare")
-        #response_bard = request_to_bard(input,input2, "compare")
-        percentage_bing = get_percentage(response_bing)
-        #percentage_bard = get_percentage(response_bard)
-        #mean = (percentage_bing + percentage_bard) / 2
-        return percentage_bing
+        response_bing = await request_to_bing(input1,input2,type="compare")
+        if (len(re.findall(r'\d+%', response_bing)) > 0):
+            #response_bard = request_to_bard(input,input2, "compare")
+            print("ENTRO EN EL IF DEL DISTANCE QUE ENTONCES BING FUNCIONA")
+            return get_percentage(response_bing)
+            #percentage_bard = get_percentage(response_bard)
+            #mean = (percentage_bing + percentage_bard) / 2
+        else:
+            if iteration < 5:
+                return await get_distance_answers(input1,input2,mode,iteration + 1)
+        return 0
     else:
         
         # Similarity
@@ -39,8 +45,6 @@ async def get_distance_answers(input1,input2,mode = 0):
         v_tf =  VectorizadorFrecuencias(tipo='tfidf', idf=False)
         v_tfidf = VectorizadorFrecuencias(tipo='tfidf')
         v_hashing = VectorizadorHash() 
-        print(input1)
-        print(input2)
         test_texts = [input1,input2]
         v_bow.fit(test_texts)
         v_tf.fit(test_texts)
@@ -71,9 +75,5 @@ async def get_distance_answers(input1,input2,mode = 0):
 
         # dictionary of "Difference"
         difference = {'hash': hamming_hashing}
-        print(percentage_bow)
-        print(percentage_tf)
-        print(percentage_tfidf)
-        print(percentage_hashing)
         similarity = {'bow': percentage_bow, 'tf': percentage_tf, 'tfidf': percentage_tfidf, 'hash': percentage_hashing}
         return similarity['hash']
