@@ -4,7 +4,7 @@ import time
 from sydney import SydneyClient
 from functions.utils import convert_to_plain_text
 from bardapi import BardCookies
-from utils.utils import generate_demografic_context
+from functions.utils import generate_demografic_context
 
 def request_to_model(model, input, iterations=0):
 
@@ -28,6 +28,9 @@ def request_to_model(model, input, iterations=0):
     if response.status_code != 200 and iterations < 5: # 503 (Service loading) or 429 (Too many requests)
         time.sleep(10)
         request_to_model(model, input, iterations + 1)
+        
+    if (model[0]=="summarize"):
+        return response.json()[0]['summary_text']
 
     return response.json()
 

@@ -1,7 +1,7 @@
 import random
 import string
 from functions.models import request_to_bing
-from functions.utils import get_only_answer_bing, request_to_bing
+from functions.utils import get_only_answer_bing
 import nltk
 
 ##########################################################################
@@ -10,7 +10,7 @@ import nltk
 
 # Borrado de caracteres
 
-def delete_characters(input, level):
+def delete_characters(input, level=2):
     if level < 1 or level > 10:
         return "Level must be between 1 and 10."
 
@@ -26,7 +26,7 @@ def delete_characters(input, level):
 
 # Remplazo de carácteres
 
-def replace_characters(input, level):
+def replace_characters(input, level=2):
     if level < 1 or level > 10:
        return "Level must be between 1 and 10."
     
@@ -42,7 +42,7 @@ def replace_characters(input, level):
 
 # Añadir carácteres aleatorios
 
-def add_characters(input, level):
+def add_characters(input, level=2):
     if level < 1 or level > 10:
         return "Level must be between 1 and 10."
     

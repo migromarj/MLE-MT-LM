@@ -20,7 +20,7 @@ def agregate_index(output):
 def calculate_distance(element1, element2):
     return abs(element1['index'] - element2['index'])
 
-def get_percentaje(input):
+def get_percentage(input):
     number = re.findall(r'\d+%', input)
     return int(number[0].replace('%', ''))
 

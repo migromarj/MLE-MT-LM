@@ -2,6 +2,7 @@ import json
 import random
 import pandas as pd
 
+
 def read_dataset(dataset_type):
     if dataset_type == "IMdb":
         path = "./data/IMdb.csv"
@@ -35,6 +36,11 @@ def read_dataset(dataset_type):
         
         df = pd.DataFrame(data_list)
         return df
+    
+    elif dataset_type == "wikipedia":
+        path = "./data/wikipedia.csv"
+        df = pd.read_csv(path, encoding='utf-8')
+        return df
     else:
         raise ValueError("Unsupported dataset type")
 
@@ -46,6 +52,36 @@ def choose_random_data(dataset):
         return get_random_jailbreak()
     elif dataset == "questions":
         return get_random_question()
+    elif dataset == "squad":
+        return get_random_squad()
+    elif dataset == "IMdb":
+        return get_random_IMdb()
+    elif dataset == "toxic":
+        return get_random_toxic()
+    elif dataset == "spam":
+        return get_random_spam()
+    elif dataset == "wikipedia":
+        return get_random_wikipedia()
+    
+def get_random_squad():
+    squad = read_dataset("squad")
+    return random.choice(squad['question'].tolist())
+
+def get_random_IMdb():
+    IMdb = read_dataset("IMdb")
+    return random.choice(IMdb['Overview'].tolist())
+
+def get_random_toxic():
+    toxic = read_dataset("toxic")
+    return random.choice(toxic['comment_text'].tolist())
+
+def get_random_spam():
+    spam = read_dataset("spam")
+    return random.choice(spam['CONTENT'].tolist())
+
+def get_random_wikipedia():
+    wikipedia = read_dataset("wikipedia")
+    return random.choice(wikipedia['input'].tolist())
 
 def read_jailbreaks():
     
@@ -82,3 +118,6 @@ def get_random_question():
     questions = read_questions()
 
     return random.choice(questions)
+#crear un csv con la lectura del dataset de wikipedia
+res = read_dataset("wikipedia")
+res.to_csv("./data/wikipedia.csv", index=False)

@@ -1,4 +1,7 @@
-from functions.utils import calculate_distance
+from functions.models import request_to_bard, request_to_bing
+from functions.utils import calculate_distance, get_percentage
+from contexto.comparacion import Similitud, Distancia, DiferenciaStrings
+from contexto.vectorizacion import VectorizadorFrecuencias, VectorizadorHash
 
 def similarity_fill_mask(response1, response2):
     total_elements = len(response1)
@@ -20,3 +23,57 @@ def similarity_fill_mask(response1, response2):
 
 
     return 1 - (total_distance/5)
+
+async def get_distance_answers(input1,input2,mode = 0):
+    if (mode == 0):
+        response_bing = await request_to_bing(input1,input2,"compare")
+        #response_bard = request_to_bard(input,input2, "compare")
+        percentage_bing = get_percentage(response_bing)
+        #percentage_bard = get_percentage(response_bard)
+        #mean = (percentage_bing + percentage_bard) / 2
+        return percentage_bing
+    else:
+        
+        # Similarity
+        v_bow =  VectorizadorFrecuencias()
+        v_tf =  VectorizadorFrecuencias(tipo='tfidf', idf=False)
+        v_tfidf = VectorizadorFrecuencias(tipo='tfidf')
+        v_hashing = VectorizadorHash() 
+        print(input1)
+        print(input2)
+        test_texts = [input1,input2]
+        v_bow.fit(test_texts)
+        v_tf.fit(test_texts)
+        v_tfidf.fit(test_texts)
+
+        vectors = {}
+        keys = ['bow', 'tf', 'tfidf', 'hash']
+        for i, v in enumerate([v_bow, v_tf, v_tfidf, v_hashing]):
+            vectors[keys[i]] = v.vectorizar(test_texts)
+
+        s_bow = Similitud(v_bow)
+        s_tf = Similitud(v_tf)
+        s_tfidf = Similitud(v_tfidf)
+        s_hashing = Similitud(v_hashing)
+
+        cosine_bow = s_bow.coseno(test_texts)
+        percentage_bow = cosine_bow[0][1] * 100
+        cosine_tf = s_tf.coseno(test_texts)
+        percentage_tf = cosine_tf[0][1] * 100
+        cosine_hashing = s_hashing.coseno(test_texts)
+        percentage_hashing = cosine_hashing[0][1] * 100
+        cosine_tfidf = s_tfidf.coseno(test_texts)
+        percentage_tfidf = cosine_tfidf[0][1] * 100
+
+        # Difference
+        d_hashing = Distancia(v_hashing)
+        hamming_hashing = 1- d_hashing.hamming(test_texts)[0][1]
+
+        # dictionary of "Difference"
+        difference = {'hash': hamming_hashing}
+        print(percentage_bow)
+        print(percentage_tf)
+        print(percentage_tfidf)
+        print(percentage_hashing)
+        similarity = {'bow': percentage_bow, 'tf': percentage_tf, 'tfidf': percentage_tfidf, 'hash': percentage_hashing}
+        return similarity['hash']
