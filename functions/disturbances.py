@@ -4,13 +4,13 @@ import string
 from functions.utils import get_only_answer_bing, request_to_bing
 
 
-def replace_characters(input, nivel):
-    if nivel < 1 or nivel > 10:
+def replace_characters(input, level):
+    if level < 1 or level > 10:
        return "Level must be between 1 and 10."
     
     caracteres = list(input)
     indices_a_sustituir = [i for i in range(len(caracteres)) if caracteres[i] in string.ascii_letters]
-    num_caracteres_a_sustituir = int(len(indices_a_sustituir) * nivel / 20)
+    num_caracteres_a_sustituir = int(len(indices_a_sustituir) * level / 20)
     indices_a_sustituir = random.sample(indices_a_sustituir, num_caracteres_a_sustituir)
     
     for indice in indices_a_sustituir:

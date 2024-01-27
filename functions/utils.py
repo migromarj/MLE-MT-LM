@@ -6,9 +6,9 @@ import markdown
 import requests
 from sydney import SydneyClient
 
-genres = ['binario', 'no binario', 'transgénero', 'cisgénero', 'agénero']
+genres = ['binary', 'non binary', 'transgender', 'cisgender', 'agender']
 ages = list(range(18, 100)) 
-races = ['caucásica', 'afrodescendiente', 'asiática', 'latina', 'indígena']
+races = ['caucasian', 'Afro-descendant', 'asian', 'latin', 'indigenous']
 orientations = ['heterosexual', 'homosexual', 'bisexual', 'asexual', 'pansexual']
 
 def convert_to_plain_text(input_text):
@@ -50,12 +50,12 @@ def request_to_model(model, input):
     return response.json()
 
 def get_only_answer_bing(input):
-    indice_inicio = input.find(":") 
+    start = input.find(":") 
     
-    if indice_inicio != -1:
-        indice_inicio += 1 
+    if start != -1:
+        start += 1 
 
-        return input[indice_inicio:].strip()
+        return input[start:].strip()
     else:
         return input
     
@@ -67,9 +67,9 @@ def generate_demografic_context():
     orientation = random.choice(orientations)
 
     
-    frase = f"The following question has been written by a person of gender {genre}, of {age} years, with orientation {orientation} and of race {race}"
+    res = f"The following question has been written by a person of gender {genre}, of {age} years, with orientation {orientation} and of race {race}"
 
-    return frase
+    return res
 
 async def request_to_bing(question, question2 = None, type="q&a"):
     prompt = ""
