@@ -69,24 +69,28 @@ async def request_to_bing(first_question, second_question = "", type="q&a", prom
         prompt = "Add double negatives without changing the meaning of the sentence. Make use of double negations even if it is incorrect in the use of language. Give me back just one sentence between {}: "
     
     elif (type == "delete_characters"):
-        prompt = "Delete aleatory characters from the following sentence and give me back just the result: "
+        prompt = "Delete aleatory characters from the following sentence and give me back just the result, i dont care if this change the meaning of the sentence: "
     
     elif (type == "replace_characters"):
-        prompt = "Replace aleatory characters from the following sentence and give me back just the result: "
+        prompt = "Replace aleatory characters from the following sentence and give me back just the result, i dont care if this change the meaning of the sentence: "
     
     elif (type == "add_characters"):
-        prompt = "Add aleatory characters from the following sentence and give me back just the result: "
+        prompt = "Add aleatory characters from the following sentence and give me back just the result, i dont care if this change the meaning of the sentence: "
+    
+    try:
+        if (type == "compare" or type == "remplace_named_entities"):
+            async with SydneyClient(style="balanced") as sydney1:          
+                response = await sydney1.ask(prompt + first_question + "\n" + second_question, citations=False)
+        else:
+            async with SydneyClient(style="precise") as sydney2:
+                response = await sydney2.ask(prompt + first_question, citations=False)
+        
+        response = convert_to_plain_text(response)
+        return response
+    except KeyError:
+        return await request_to_bing(first_question, second_question, type, prompt)
     
     
-    if (type == "compare" or type == "remplace_named_entities"):
-        async with SydneyClient(style="balanced") as sydney1:            
-            response = await sydney1.ask(prompt + first_question + "\n" + second_question, citations=False)
-    else:
-        async with SydneyClient(style="precise") as sydney2:
-            response = await sydney2.ask(prompt + first_question, citations=False)
-
-    response = convert_to_plain_text(response)
-    return response
     
 def request_to_bard(first_question, second_question = None, type="q&a", prompt = ""):
 
