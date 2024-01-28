@@ -16,6 +16,11 @@ def delete_characters(input1, level=2):
 
     characters = list(input1)
     indexes_to_delete = [i for i in range(len(characters)) if characters[i] in string.ascii_letters]
+
+    mask_index = input1.find('<mask>')
+    for i in range(1, 5):
+        indexes_to_delete.remove(mask_index + i)
+
     num_characters_to_delete = int(len(indexes_to_delete) * level / 20)
     indexes_to_delete = random.sample(indexes_to_delete, num_characters_to_delete)
 
@@ -32,6 +37,11 @@ def replace_characters(input1, level=2):
     
     caracteres = list(input1)
     indices_a_sustituir = [i for i in range(len(caracteres)) if caracteres[i] in string.ascii_letters]
+
+    mask_index = input1.find('<mask>')
+    for i in range(1, 5):
+        indices_a_sustituir.remove(mask_index + i)
+
     num_caracteres_a_sustituir = int(len(indices_a_sustituir) * level / 20)
     indices_a_sustituir = random.sample(indices_a_sustituir, num_caracteres_a_sustituir)
     
@@ -48,10 +58,19 @@ def add_characters(input1, level=2):
     
     characters = list(input1)
     num_characters_to_add = int(len(characters) * level / 20)
-    
+
     for _ in range(num_characters_to_add):
-        index = random.randint(0, len(characters))
-        characters.insert(index, random.choice(string.ascii_letters))
+
+        mask_index = input1.find('<mask>')
+
+        if mask_index != -1:
+            index = random.randint(0, len(characters))
+            while index >= mask_index and index < mask_index + 6:
+                index = random.randint(0, len(characters))
+            characters.insert(index, random.choice(string.ascii_letters))
+        else:
+            index = random.randint(0, len(characters))
+            characters.insert(index, random.choice(string.ascii_letters))
     
     return ''.join(characters)
 

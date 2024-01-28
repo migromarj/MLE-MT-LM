@@ -29,6 +29,8 @@ def request_to_model(model, input1, iterations=0):
         
         if (model[0]=="summarize"):
             return response.json()[0]['summary_text']
+        elif (model[0]=="translate"):
+            return response.json()[0]['translation_text']
 
         return response.json()
             
@@ -38,7 +40,7 @@ def request_to_model(model, input1, iterations=0):
 
     
 
-async def request_to_bing(first_question, second_question = "", type="q&a", prompt = ""):
+async def request_to_bing(first_question, second_question = "", type="q&a", prompt = "", iterations=0):
 
     if (type == "q&a"):
         prompt = "Answer me the following question in plain text without using quotes: "
@@ -88,7 +90,10 @@ async def request_to_bing(first_question, second_question = "", type="q&a", prom
         response = convert_to_plain_text(response)
         return response
     except KeyError:
-        return await request_to_bing(first_question, second_question, type, prompt)
+        if(iterations > 5):
+            return "Error"
+        
+        return await request_to_bing(first_question, second_question, type, prompt, iterations + 1)
     
     
     

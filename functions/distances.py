@@ -30,7 +30,6 @@ async def get_distance_answers(input1,input2,mode = 0, iteration = 0):
         response_bing = await request_to_bing(input1,input2,type="compare")
         if (len(re.findall(r'\d+%', response_bing)) > 0):
             #response_bard = request_to_bard(input,input2, "compare")
-            print("ENTRO EN EL IF DEL DISTANCE QUE ENTONCES BING FUNCIONA")
             return get_percentage(response_bing)
             #percentage_bard = get_percentage(response_bard)
             #mean = (percentage_bing + percentage_bard) / 2
