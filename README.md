@@ -13,6 +13,6 @@ Debe crear un archivo `.env`donde almacenar las variables de entorno necesarias,
 
 - `HUGGING_FACE_API_KEY` hace referencia a la API Key de la plataforma Hugging Face, necesaria para realizar peticiones sobre los distintos modelos de lenguaje bajo prueba. Si tiene problemas para obtenerla puede seguir el _quicktour_ que se accesible a través de su [página web](https://huggingface.co/docs/api-inference/quicktour).
 
-- `BING_U_COOKIE` hace referencia a la cookie que tiene como nombre "U\_", en la página de Bing Chat. Si tiene problemas para obtenerla puede acceder al tutorial que se proporciona en el siguiente [enlace]().
+- `BING_U_COOKIE` hace referencia a la cookie que tiene como nombre "U\_", en la página de Bing Chat. Si tiene problemas para obtenerla puede acceder al tutorial que se proporciona en el siguiente [enlace](https://www.youtube.com/watch?v=u0BzcbP1AVw&ab_channel=snuowCh).
 
-- `SECURE_1PSID`, `SECURE_1PSIDTS` y `SECURE_1PSIDCC` hacen referencia a las cookies necesarias para el uso de Google Bard. Si tiene problemas para obtenerla puede acceder al tutorial que se proporciona en el siguiente [enlace]().
+- `SECURE_1PSID`, `SECURE_1PSIDTS` y `SECURE_1PSIDCC` hacen referencia a las cookies necesarias para el uso de Google Bard. Si tiene problemas para obtenerla puede acceder al tutorial que se proporciona en el siguiente [enlace](https://github.com/dsdanielpark/Bard-API).
