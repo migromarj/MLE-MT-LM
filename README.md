@@ -15,4 +15,4 @@ Debe crear un archivo `.env`donde almacenar las variables de entorno necesarias,
 
 - `BING_U_COOKIE` hace referencia a la cookie que tiene como nombre "U\_", en la página de Bing Chat. Si tiene problemas para obtenerla puede acceder al tutorial que se proporciona en el siguiente [enlace](https://www.youtube.com/watch?v=u0BzcbP1AVw&ab_channel=snuowCh).
 
-- `SECURE_1PSID`, `SECURE_1PSIDTS` y `SECURE_1PSIDCC` hacen referencia a las cookies necesarias para el uso de Google Bard. Si tiene problemas para obtenerla puede acceder al tutorial que se proporciona en el siguiente [enlace](https://github.com/dsdanielpark/Bard-API).
+- `SECURE_1PSID`, `SECURE_1PSIDTS` y `SECURE_1PSIDCC` hacen referencia a las cookies necesarias para el uso de Google Bard. Si tiene problemas para obtenerla puede acceder al repositorio del paquete en el siguiente [enlace](https://github.com/dsdanielpark/Bard-API). En el, aparte del tutorial principal descrito en el readme, si se tiene aún problemas puede acceder al apartado issues.
