@@ -3,6 +3,10 @@
 > [!IMPORTANT]  
 > Es importante que si desea llevar a cabo la ejecución del proyecto tenga instalada la versión 3.9.X de Python. Nosotros, por ejemplo, hemos hecho uso de la versión [3.9.13](https://www.python.org/downloads/release/python-3913/).
 
+## Instalación de dependencias
+
+Puede instalar todas las dependencias necesarias para la ejecución del proyecto con el comando: `pip install -r requirements.txt`
+
 ## Inicialización del archivo .env
 
 Debe crear un archivo `.env`donde almacenar las variables de entorno necesarias, para ello puede copiar el contenido de la plantilla que se proporciona, con el nombre `.env.template`, y completarla con sus datos:
