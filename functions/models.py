@@ -6,11 +6,13 @@ from functions.utils import convert_to_plain_text
 from bardapi import BardCookies
 from functions.utils import generate_demografic_context
 
-def request_to_model(model, input1, iterations=0):
+# Request to Hugging Face API
+
+def request_to_model(model, input_1, iterations=0):
 
     BASE_URL = "https://api-inference.huggingface.co/models/"
     headers = {"Authorization": f"Bearer {os.getenv('HUGGING_FACE_API_KEY')}"}
-    new_input = input1.strip()
+    new_input = input_1.strip()
     parameters = {}
 
     if model[0] == 'fillmask':
@@ -25,7 +27,7 @@ def request_to_model(model, input1, iterations=0):
         
         if response.status_code != 200 and iterations < 5: # 503 (Service loading) or 429 (Too many requests)
             time.sleep(10)
-            return request_to_model(model, input1, iterations + 1)
+            return request_to_model(model, input_1, iterations + 1)
         
         if (model[0]=="summarize"):
             return response.json()[0]['summary_text']
@@ -38,7 +40,7 @@ def request_to_model(model, input1, iterations=0):
         print(exception)
         return "Error"
 
-    
+# Request to Bing Chat through Sydney    
 
 async def request_to_bing(first_question, second_question = "", type="q&a", prompt = "", iterations=0):
 
@@ -95,7 +97,7 @@ async def request_to_bing(first_question, second_question = "", type="q&a", prom
         
         return await request_to_bing(first_question, second_question, type, prompt, iterations + 1)
     
-    
+# Request to Bard through BardAPI
     
 def request_to_bard(first_question, second_question = None, type="q&a", prompt = ""):
 

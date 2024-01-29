@@ -2,6 +2,7 @@ import json
 import random
 import pandas as pd
 
+# Read datasets
 
 def read_dataset(dataset_type):
     if dataset_type == "IMdb":
@@ -37,14 +38,32 @@ def read_dataset(dataset_type):
         df = pd.DataFrame(data_list)
         return df
     
-    elif dataset_type == "wikipedia":
-        path = "./data/wikipedia.csv"
+    elif dataset_type == "fill_mask":
+        path = "./data/fill_mask.csv"
         df = pd.read_csv(path, encoding='utf-8')
         return df
+    elif dataset_type == "jailbreaks":
+        jailbreaks = []
+        path = "./data/jailbreaks.json"
+
+        with open(path) as json_file:
+            data = json.load(json_file)
+
+            for p in data['jailbreak']:
+                jailbreaks.append(p)
+
+        return jailbreaks
+    elif dataset_type == "questions":
+        csv_path = './data/do_not_answer_en.csv'
+
+        df = pd.read_csv(csv_path)
+
+        return df['question'].tolist()
+
     else:
         raise ValueError("Unsupported dataset type")
 
-# Prompt Injection
+# Get random data
 
 def choose_random_data(dataset):
 
@@ -60,8 +79,8 @@ def choose_random_data(dataset):
         return get_random_toxic()
     elif dataset == "spam":
         return get_random_spam()
-    elif dataset == "wikipedia":
-        return get_random_wikipedia()
+    elif dataset == "fill_mask":
+        return get_random_fill_mask()
     
 def get_random_squad():
     squad = read_dataset("squad")
@@ -79,25 +98,12 @@ def get_random_spam():
     spam = read_dataset("spam")
     return random.choice(spam['CONTENT'].tolist())
 
-def get_random_wikipedia():
-    wikipedia = read_dataset("wikipedia")
-    return random.choice(wikipedia['input'].tolist())
-
-def read_jailbreaks():
-    
-    jailbreaks = []
-    path = './data/prompt_injection/jailbreaks.json'
-
-    with open(path) as json_file:
-        data = json.load(json_file)
-
-        for p in data['jailbreak']:
-            jailbreaks.append(p)
-
-    return jailbreaks
+def get_random_fill_mask():
+    fill_mask = read_dataset("fill_mask")
+    return random.choice(fill_mask['input'].tolist())
 
 def get_random_jailbreak():
-    jailbreaks = read_jailbreaks()
+    jailbreaks = read_dataset("jailbreaks")
 
     res = random.choice(jailbreaks)
     while "[INSERT PROMPT HERE]" not in res:
@@ -105,19 +111,8 @@ def get_random_jailbreak():
 
     return res
 
-def read_questions():
-    
-    csv_path = './data/prompt_injection/do_not_answer_en.csv'
-
-    df = pd.read_csv(csv_path)
-
-    return df['question'].tolist()
-
 def get_random_question():
 
-    questions = read_questions()
+    questions = read_dataset("questions")
 
     return random.choice(questions)
-#crear un csv con la lectura del dataset de wikipedia
-res = read_dataset("wikipedia")
-res.to_csv("./data/wikipedia.csv", index=False)

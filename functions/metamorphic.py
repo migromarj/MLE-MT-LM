@@ -1,13 +1,14 @@
-from functions.readDatasets import choose_random_data, read_dataset
-from functions.models import request_to_model, request_to_bing
-from functions.distances import similarity_fill_mask, get_distance_answers
 import time
 import inspect
 
+from functions.readDatasets import choose_random_data
+from functions.models import request_to_model, request_to_bing
+from functions.distances import similarity_fill_mask, get_distance_answers
 from functions.utils import agregate_index
 
+# Metamorphic relation templates
 
-def input_equivalence_mrt(model,original_input, perturbed_input):
+def input_equivalence_mrt(model, original_input, perturbed_input):
     if (model[0] != 'toxic' and model[0] != 'spam'):
         return "This model is not supported for this test"
 
@@ -18,10 +19,11 @@ def input_equivalence_mrt(model,original_input, perturbed_input):
     except:
         return False
 
-async def equivalence_set_mrt(model, input1):
+
+async def equivalence_set_mrt(model, input_1):
     
     try:
-        original_output = request_to_model(model, input1)[0][0]['label']    
+        original_output = request_to_model(model, input_1)[0][0]['label']    
         llms_outputs = []
 
         if (model[0] == 'toxic'):
@@ -33,8 +35,8 @@ async def equivalence_set_mrt(model, input1):
             elif original_output == "toxic":
                 original_output = "yes"
 
-            bing_output = await request_to_bing(input1, type="toxic")
-            #bard_output = request_to_bard(input1, "toxic")
+            bing_output = await request_to_bing(input_1, type="toxic")
+            #bard_output = request_to_bard(input_1, "toxic")
             llms_outputs.append(bing_output.lower())
             #llms_outputs.append(bard_output.lower())
             
@@ -47,8 +49,8 @@ async def equivalence_set_mrt(model, input1):
             elif original_output == "Spam":
                 original_output = "yes"
             
-            bing_output = await request_to_bing(input1, type="spam")
-            #bard_output = request_to_bard(input1, "spam")
+            bing_output = await request_to_bing(input_1, type="spam")
+            #bard_output = request_to_bard(input_1, "spam")
             llms_outputs.append(bing_output.lower())
             #llms_outputs.append(bard_output.lower())
             
@@ -81,8 +83,7 @@ async def distance_set_mrt(model, original_input, perturbance,threshold=70):
         return similarity_metric_1_2 > threshold
 
 
-
-def input_discrepancy_mrt(model,original_imput, perturbed_input):
+def input_discrepancy_mrt(model, original_imput, perturbed_input):
     
     if (model[0] != 'toxic' and model[0] != 'spam'):
         return "This model is not supported for this test"
@@ -91,6 +92,7 @@ def input_discrepancy_mrt(model,original_imput, perturbed_input):
     perturbed_output = request_to_model(model, perturbed_input)[0][0]['label']   
     
     return original_output != perturbed_output
+
 
 async def input_distance_mrt(model, original_input, perturbed_input, threshold = 50):
     
@@ -118,7 +120,10 @@ async def prompt_distance_mrt(model, original_prompt, perturbed_prompt, original
     else:
         return "This model is not supported for this test"
 
-async def calculate_M_ASR(model, disturbation_func, quality_attribute, perturbance, change_meaning = False, iterations = 5):
+
+# Calculate AFR
+
+async def calculate_AFR(model, disturbation_func, quality_attribute, perturbance, change_meaning = False, iterations = 5):
     fulfilled_relations = 0
     evaluated_relations = 0
     start = time.time()
@@ -126,7 +131,7 @@ async def calculate_M_ASR(model, disturbation_func, quality_attribute, perturban
     if (model[0]=='fillmask'):
 
         for _ in range(iterations):
-            text = choose_random_data('wikipedia')
+            text = choose_random_data('fill_mask')
             if inspect.iscoroutinefunction(disturbation_func):
                 disturbed = await disturbation_func(text)
             else:
@@ -208,10 +213,10 @@ async def calculate_M_ASR(model, disturbation_func, quality_attribute, perturban
     if evaluated_relations == 0:
         return 0 
 
-    m_asr = fulfilled_relations / evaluated_relations
-    return m_asr, time.time() - start
+    afr = fulfilled_relations / evaluated_relations
+    return afr, time.time() - start
 
-async def calculate_M_ASR_without_Bing(model, disturbation_func, quality_attribute, change_meaning = False, iterations = 5):
+async def calculate_AFR_without_Bing(model, disturbation_func, quality_attribute, change_meaning = False, iterations = 5):
     fulfilled_relations = 0
     evaluated_relations = 0
     start = time.time()
@@ -219,7 +224,7 @@ async def calculate_M_ASR_without_Bing(model, disturbation_func, quality_attribu
     if (model[0]=='fillmask'):
 
         for _ in range(iterations):
-            text = choose_random_data('wikipedia')
+            text = choose_random_data('fill_mask')
             if inspect.iscoroutinefunction(disturbation_func):
                 disturbed = await disturbation_func(text)
             else:
@@ -283,5 +288,5 @@ async def calculate_M_ASR_without_Bing(model, disturbation_func, quality_attribu
     if evaluated_relations == 0:
         return 0 
 
-    m_asr = fulfilled_relations / evaluated_relations
-    return m_asr, time.time() - start
+    afr = fulfilled_relations / evaluated_relations
+    return afr, time.time() - start

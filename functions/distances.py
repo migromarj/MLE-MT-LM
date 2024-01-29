@@ -1,41 +1,24 @@
 import re
+
 from functions.models import request_to_bard, request_to_bing
 from functions.utils import calculate_distance, get_percentage
-from contexto.comparacion import Similitud, Distancia, DiferenciaStrings
+
+from contexto.comparacion import Similitud, Distancia
 from contexto.vectorizacion import VectorizadorFrecuencias, VectorizadorHash
 
-def similarity_fill_mask(response1, response2):
-    total_elements = len(response1)
-    total_distance = 0
+# Text answers similarity
 
-    for element1 in response1:
-        hash_element = False
-        for element2 in response2:
-            if element1['token_str'].strip() == element2['token_str'].strip():
-                prob_element1 = element1['score']
-                prob_element2 = element2['score']
-                distance_between_indices = calculate_distance(element1, element2)
-                total_distance += (distance_between_indices * abs(prob_element1 - prob_element2)) / (total_elements - 1)
-                hash_element = True
-                break
-
-        if not hash_element:
-            total_distance += 1
-
-
-    return 1 - (total_distance/5)
-
-async def get_distance_answers(input1,input2,mode = 0, iteration = 0):
+async def get_distance_answers(input_1, input_2, mode = 0, iteration = 0):
     if (mode == 0):
-        response_bing = await request_to_bing(input1,input2,type="compare")
+        response_bing = await request_to_bing(input_1, input_2, type = "compare")
         if (len(re.findall(r'\d+%', response_bing)) > 0):
-            #response_bard = request_to_bard(input,input2, "compare")
+            #response_bard = request_to_bard(input_1, input_2, "compare")
             return get_percentage(response_bing)
             #percentage_bard = get_percentage(response_bard)
             #mean = (percentage_bing + percentage_bard) / 2
         else:
             if iteration < 5:
-                return await get_distance_answers(input1,input2,mode,iteration + 1)
+                return await get_distance_answers(input_1, input_2, mode,iteration + 1)
         return 0
     else:
         
@@ -44,7 +27,7 @@ async def get_distance_answers(input1,input2,mode = 0, iteration = 0):
         v_tf =  VectorizadorFrecuencias(tipo='tfidf', idf=False)
         v_tfidf = VectorizadorFrecuencias(tipo='tfidf')
         v_hashing = VectorizadorHash() 
-        test_texts = [input1,input2]
+        test_texts = [input_1, input_2]
         v_bow.fit(test_texts)
         v_tf.fit(test_texts)
         v_tfidf.fit(test_texts)
@@ -76,3 +59,26 @@ async def get_distance_answers(input1,input2,mode = 0, iteration = 0):
         difference = {'hash': hamming_hashing}
         similarity = {'bow': percentage_bow, 'tf': percentage_tf, 'tfidf': percentage_tfidf, 'hash': percentage_hashing}
         return similarity['hash']
+    
+# Fill mask answer similarity
+    
+def similarity_fill_mask(response_1, response_2):
+    total_elements = len(response_1)
+    total_distance = 0
+
+    for element_1 in response_1:
+        hash_element = False
+        for element_2 in response_2:
+            if element_1['token_str'].strip() == element_2['token_str'].strip():
+                prob_element1 = element_1['score']
+                prob_element2 = element_2['score']
+                distance_between_indices = calculate_distance(element_1, element_2)
+                total_distance += (distance_between_indices * abs(prob_element1 - prob_element2)) / (total_elements - 1)
+                hash_element = True
+                break
+
+        if not hash_element:
+            total_distance += 1
+
+
+    return 1 - (total_distance/5)

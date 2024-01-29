@@ -5,6 +5,5 @@ sydney-py==0.17.6
 markdown==3.5.1
 nltk==3.6.2
 ConTexto==0.2.0
-apache-beam==2.53.0
-mwparserfromhell==0.6.6
-
+matplotlib==3.8.2
+seaborn==0.13.0
